@@ -216,8 +216,27 @@ namespace OpenWifi {
 		static const std::string JSON(".json");
 		static const std::string UPGRADE("-upgrade.bin");
 
-		std::string URIBase = "https://";
-		URIBase += MicroServiceConfigGetString("s3.bucket.uri", "");
+		//std::string URIBase = "https://";
+		//URIBase += MicroServiceConfigGetString("s3.bucket.uri", "");
+		// FMS Manifest Creator
+		// Previously generated firmware URIs pointing to direct S3 objects.
+		// Now URIs are rewritten to point to the configured proxy server.
+		// This allows devices to download via secure proxy with certificates.
+		std::string uriBase = MicroServiceConfigGetString("URIBase", "");
+		if (uriBase.empty()) {
+			uriBase = MicroServiceConfigGetString("firmware.uri.base", "");
+		}
+		if (uriBase.empty()) {
+			const auto bucketUri = MicroServiceConfigGetString("s3.bucket.uri", "");
+			const bool https = MicroServiceConfigGetBool("s3.endpoint.https", true);
+			if (!bucketUri.empty()) {
+				uriBase = (https ? "https://" : "http://") + bucketUri;
+			}
+		}
+		// Normalize (strip trailing slashes)
+		while (!uriBase.empty() && uriBase.back() == '/') {
+			uriBase.pop_back();
+		}
 
 		Bucket.clear();
 
@@ -290,7 +309,8 @@ namespace OpenWifi {
 					auto It = Bucket.find(ReleaseName);
 					auto S3TimeStamp = (uint64_t)(Object.GetLastModified().Millis() / 1000);
 					uint64_t S3Size = Object.GetSize();
-					std::string URI = URIBase + "/" + FileName.getFileName();
+					//std::string URI = URIBase + "/" + FileName.getFileName();
+					std::string URI = uriBase + "/" + FileName.getFileName();
 					if (It != Bucket.end()) {
 						It->second.S3TimeStamp = S3TimeStamp;
 						It->second.S3Size = S3Size;

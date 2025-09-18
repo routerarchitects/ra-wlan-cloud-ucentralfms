@@ -4,11 +4,31 @@ set -e
 if [ "$SELFSIGNED_CERTS" = 'true' ]; then
     update-ca-certificates
 fi
+# - If SECURE_FIRMWARE_URL_PREFIX is defined, always use that.
+#   (This is the new Proxy URL approach instead of exposing raw S3 links.)
+#
+if [ -n "${SECURE_FIRMWARE_URL_PREFIX}" ]; then
+  export FIRMWARE_URI_BASE="${SECURE_FIRMWARE_URL_PREFIX%/}"
+# - Otherwise, fall back to legacy behavior:
+#   * Build firmware URI from S3 bucket or endpoint
+#   * Respect HTTPS flag (S3_HTTPS) and virtual addressing (S3_VIRTUAL_ADRESSING)
+#
+else
+  _proto="http"
+  [ "${S3_HTTPS}" = "true" ] && _proto="https"
+  if [ "${S3_VIRTUAL_ADRESSING}" = "true" ]; then
+    export FIRMWARE_URI_BASE="${_proto}://${S3_BUCKET_URI%/}"
+  else
+    export FIRMWARE_URI_BASE="${_proto}://${S3_ENDPOINT%/}/${S3_BUCKETNAME}"
+  fi
+fi
 
 if [[ "$TEMPLATE_CONFIG" = 'true' ]]; then
   RESTAPI_HOST_ROOTCA=${RESTAPI_HOST_ROOTCA:-"\$OWFMS_ROOT/certs/restapi-ca.pem"} \
   RESTAPI_HOST_PORT=${RESTAPI_HOST_PORT:-"16004"} \
   RESTAPI_HOST_CERT=${RESTAPI_HOST_CERT:-"\$OWFMS_ROOT/certs/restapi-cert.pem"} \
+  SECURE_FIRMWARE_URL_PREFIX=${SECURE_FIRMWARE_URL_PREFIX:-""} \
+  FIRMWARE_URI_BASE=${FIRMWARE_URI_BASE:-""} \
   RESTAPI_HOST_KEY=${RESTAPI_HOST_KEY:-"\$OWFMS_ROOT/certs/restapi-key.pem"} \
   RESTAPI_HOST_KEY_PASSWORD=${RESTAPI_HOST_KEY_PASSWORD:-"mypassword"} \
   INTERNAL_RESTAPI_HOST_ROOTCA=${INTERNAL_RESTAPI_HOST_ROOTCA:-"\$OWFMS_ROOT/certs/restapi-ca.pem"} \
