@@ -11,7 +11,7 @@ if [ -n "${SECURE_FIRMWARE_URL_PREFIX}" ]; then
   export FIRMWARE_URI_BASE="${SECURE_FIRMWARE_URL_PREFIX%/}"
 # - Otherwise, fall back to legacy behavior:
 #   * Build firmware URI from S3 bucket or endpoint
-#   * Respect HTTPS flag (S3_HTTPS) and virtual addressing (S3_VIRTUAL_ADRESSING)
+#   When secure_firmware_url_prefix is ​​not set, the firmware server URL is generated from the S3 bucket
 #
 else
   _proto="http"
