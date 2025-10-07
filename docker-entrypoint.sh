@@ -4,24 +4,6 @@ set -e
 if [ "$SELFSIGNED_CERTS" = 'true' ]; then
     update-ca-certificates
 fi
-# - If SECURE_FIRMWARE_URL_PREFIX is defined, always use that.
-#   (This is the new Proxy URL approach instead of exposing raw S3 links.)
-#
-if [ -n "${SECURE_FIRMWARE_URL_PREFIX}" ]; then
-  export FIRMWARE_URI_BASE="${SECURE_FIRMWARE_URL_PREFIX%/}"
-# - Otherwise, fall back to legacy behavior:
-#   * Build firmware URI from S3 bucket or endpoint
-#   When secure_firmware_url_prefix is ​​not set, the firmware server URL is generated from the S3 bucket
-#
-else
-  _proto="http"
-  [ "${S3_HTTPS}" = "true" ] && _proto="https"
-  if [ "${S3_VIRTUAL_ADRESSING}" = "true" ]; then
-    export FIRMWARE_URI_BASE="${_proto}://${S3_BUCKET_URI%/}"
-  else
-    export FIRMWARE_URI_BASE="${_proto}://${S3_ENDPOINT%/}/${S3_BUCKETNAME}"
-  fi
-fi
 
 if [[ "$TEMPLATE_CONFIG" = 'true' ]]; then
   RESTAPI_HOST_ROOTCA=${RESTAPI_HOST_ROOTCA:-"\$OWFMS_ROOT/certs/restapi-ca.pem"} \

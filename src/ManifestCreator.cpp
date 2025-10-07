@@ -221,20 +221,20 @@ namespace OpenWifi {
 		 Now URIs are rewritten to point to the configured proxy server.
 		 This allows devices to download via secure proxy with certificates.
 		*/
-		std::string uriBase = MicroServiceConfigGetString("URIBase", "");
-		if (uriBase.empty()) {
-			uriBase = MicroServiceConfigGetString("firmware.uri.base", "");
+		std::string URIBase = MicroServiceConfigGetString("firmware.uri.base", "");
+		if (!URIBase.empty() && URIBase.rfind("http", 0) != 0) {
+			URIBase = "https://" + URIBase;
 		}
-		if (uriBase.empty()) {
+		if (URIBase.empty()) {
 			const auto bucketUri = MicroServiceConfigGetString("s3.bucket.uri", "");
 			const bool https = MicroServiceConfigGetBool("s3.endpoint.https", true);
 			if (!bucketUri.empty()) {
-				uriBase = (https ? "https://" : "http://") + bucketUri;
+				URIBase = (https ? "https://" : "http://") + bucketUri;
 			}
 		}
 		// Normalize (strip trailing slashes)
-		while (!uriBase.empty() && uriBase.back() == '/') {
-			uriBase.pop_back();
+		while (!URIBase.empty() && URIBase.back() == '/') {
+			URIBase.pop_back();
 		}
 
 		Bucket.clear();
@@ -308,7 +308,7 @@ namespace OpenWifi {
 					auto It = Bucket.find(ReleaseName);
 					auto S3TimeStamp = (uint64_t)(Object.GetLastModified().Millis() / 1000);
 					uint64_t S3Size = Object.GetSize();
-					std::string URI = uriBase + "/" + FileName.getFileName();
+					std::string URI = URIBase + "/" + FileName.getFileName();
 					if (It != Bucket.end()) {
 						It->second.S3TimeStamp = S3TimeStamp;
 						It->second.S3Size = S3Size;
