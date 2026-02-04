@@ -16,6 +16,7 @@ namespace OpenWifi::FMSObjects {
 		field_to_json(Obj, "release", release);
 		field_to_json(Obj, "deviceType", deviceType);
 		field_to_json(Obj, "description", description);
+		field_to_json(Obj, "deviceClass", deviceClass);
 		field_to_json(Obj, "revision", revision);
 		field_to_json(Obj, "uri", uri);
 		field_to_json(Obj, "image", image);
@@ -38,6 +39,7 @@ namespace OpenWifi::FMSObjects {
 			field_from_json(Obj, "release", release);
 			field_from_json(Obj, "deviceType", deviceType);
 			field_from_json(Obj, "description", description);
+			field_from_json(Obj, "deviceClass", deviceClass);
 			field_from_json(Obj, "revision", revision);
 			field_from_json(Obj, "uri", uri);
 			field_from_json(Obj, "image", image);

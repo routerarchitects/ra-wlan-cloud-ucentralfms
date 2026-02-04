@@ -34,7 +34,8 @@ namespace OpenWifi {
 		int Start() override;
 		void Stop() override;
 		bool AddToCache(const std::string &DeviceType, const std::string &Revision,
-						const std::string &Id, uint64_t TimeStamp);
+						const std::string &Id, uint64_t TimeStamp,
+						const std::string &DeviceClass = "");
 		// void AddRevision(const std::string &Revision);
 		bool FindLatestFirmware(const std::string &DeviceType, LatestFirmwareCacheEntry &Entry);
 		bool FindLatestRCOnlyFirmware(const std::string &DeviceType,
@@ -57,6 +58,17 @@ namespace OpenWifi {
 			std::lock_guard G(Mutex_);
 			return DeviceSet_;
 		};
+
+		inline Types::StringSet GetDeviceClasses() {
+			std::lock_guard G(Mutex_);
+			return DeviceClassSet_;
+		};
+		inline std::map<std::string, Types::StringSet> GetDeviceTypesByClass() {
+			std::lock_guard G(Mutex_);
+			return DeviceClassMap_;
+		};
+
+
 		bool IsLatest(const std::string &DeviceType, const std::string &Revision);
 		bool IsLatestRCOnly(const std::string &DeviceType, const std::string &Revision);
 
@@ -65,6 +77,8 @@ namespace OpenWifi {
 		rcOnlyLatestFirmwareCacheMap rcCache_;
 		Types::StringSet RevisionSet_;
 		Types::StringSet DeviceSet_;
+		Types::StringSet DeviceClassSet_;
+		std::map<std::string, Types::StringSet> DeviceClassMap_;
 		explicit LatestFirmwareCache() noexcept
 			: SubSystemServer("LatestFirmwareCache", "LATEST-FIRMWARE-CACHE",
 							  "LatestFirmwareCache") {}

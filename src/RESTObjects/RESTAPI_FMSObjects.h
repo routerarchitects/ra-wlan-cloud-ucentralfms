@@ -16,6 +16,7 @@ namespace OpenWifi::FMSObjects {
 		std::string release;
 		std::string deviceType;
 		std::string description;
+		std::string deviceClass;
 		std::string revision;
 		std::string uri;
 		std::string image;

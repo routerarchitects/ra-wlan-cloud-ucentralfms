@@ -64,6 +64,8 @@ namespace OpenWifi {
 					Entry.Timestamp = ParsedContent->get("timestamp");
 					if (Entry.Timestamp > Limit) {
 						Entry.Compatible = ParsedContent->get("compatible").toString();
+						if (ParsedContent->has("type"))
+							Entry.DeviceClass = ParsedContent->get("type").toString();
 						Entry.Revision = ParsedContent->get("revision").toString();
 						Entry.Image = ParsedContent->get("image").toString();
 						auto FullNme = Name + "-upgrade.bin";
@@ -136,6 +138,7 @@ namespace OpenWifi {
 				F.uri = BucketEntry.URI;
 				F.revision = BucketEntry.Revision;
 				F.deviceType = BucketEntry.Compatible;
+				F.deviceClass = BucketEntry.DeviceClass;
 				if (StorageService()->FirmwaresDB().AddFirmware(F)) {
 					poco_information(Logger(),
 									 fmt::format("Adding firmware '{}', size={}", Release, F.size));
@@ -260,12 +263,16 @@ namespace OpenWifi {
 							auto It = Bucket.find(Release);
 							uint64_t TimeStamp = ParsedContent->get("timestamp");
 							auto Compatible = ParsedContent->get("compatible").toString();
+							std::string DeviceClass;
+							if (ParsedContent->has("type"))
+								DeviceClass = ParsedContent->get("type").toString();
 							auto Revision = ParsedContent->get("revision").toString();
 							// std::cout << "Revision from bucket in JSON" << Revision << std::endl;
 							auto Image = ParsedContent->get("image").toString();
 							if (It != Bucket.end()) {
 								It->second.Timestamp = TimeStamp;
 								It->second.Compatible = Compatible;
+								It->second.DeviceClass = DeviceClass;
 								It->second.Revision = Revision;
 								It->second.Image = Image;
 								It->second.S3ContentManifest = Content;
@@ -278,6 +285,7 @@ namespace OpenWifi {
 																	  .Revision = Revision,
 																	  .Image = Image,
 																	  .Compatible = Compatible,
+																	  .DeviceClass = DeviceClass,
 																	  .Timestamp = TimeStamp,
 																	  .URI = ""});
 							}
@@ -306,6 +314,7 @@ namespace OpenWifi {
 																  .Revision = "",
 																  .Image = "",
 																  .Compatible = "",
+																  .DeviceClass = "",
 																  .Timestamp = 0,
 																  .URI = URI});
 					}

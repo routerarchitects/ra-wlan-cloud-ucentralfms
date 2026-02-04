@@ -19,11 +19,17 @@ namespace OpenWifi {
 	}
 
 	bool LatestFirmwareCache::AddToCache(const std::string &DeviceType, const std::string &Revision,
-										 const std::string &Id, uint64_t TimeStamp) {
+										 const std::string &Id, uint64_t TimeStamp,
+										 const std::string &DeviceClass) {
 		std::lock_guard G(Mutex_);
 
 		RevisionSet_.insert(Revision);
 		DeviceSet_.insert(DeviceType);
+		if (!DeviceClass.empty()) {
+			DeviceClassSet_.insert(DeviceClass);
+			DeviceClassMap_[DeviceClass].insert(DeviceType);
+		}
+
 
 		auto E = Cache_.find(DeviceType);
 		if ((E == Cache_.end()) || (TimeStamp >= E->second.TimeStamp)) {
@@ -94,4 +100,4 @@ namespace OpenWifi {
 			std::cout << "Device: " << Id << "    ID:" << E.Id << std::endl;
 		}
 	}
-} // namespace OpenWifi
+}

@@ -22,6 +22,7 @@ namespace OpenWifi {
 		std::string Revision;
 		std::string Image;
 		std::string Compatible;
+		std::string DeviceClass;
 		uint64_t Timestamp = 0;
 		std::string URI;
 		void Print() const;
