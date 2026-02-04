@@ -43,8 +43,8 @@ namespace OpenWifi {
 
 			Poco::JSON::Object RetObj;
 			RetObj.set(RESTAPI::Protocol::DEVICETYPES, DeviceArray);
-			RetObj.set("deviceClasses", ClassArray);
-			RetObj.set("deviceTypesByClass", ClassMapObj);
+			RetObj.set(RESTAPI::Protocol::DEVICECLASSES, ClassArray);
+			RetObj.set(RESTAPI::Protocol::DEVICETYPESBYCLASS, ClassMapObj);
 			return ReturnObject(RetObj);
 		}
 

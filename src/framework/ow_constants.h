@@ -537,6 +537,8 @@ namespace OpenWifi::RESTAPI::Protocol {
 	static const char *AGES = "ages";
 	static const char *REVISIONS = "revisions";
 	static const char *DEVICETYPES = "deviceTypes";
+	static const char *DEVICECLASSES = "deviceClasses";
+	static const char *DEVICETYPESBYCLASS = "deviceTypesByClass";
 	static const char *LATESTONLY = "latestOnly";
 	static const char *IDONLY = "idOnly";
 	static const char *REVISIONSET = "revisionSet";
