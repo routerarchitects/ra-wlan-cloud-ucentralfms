@@ -21,13 +21,30 @@ namespace OpenWifi {
 		}
 
 		if (GetBoolParameter(RESTAPI::Protocol::DEVICESET)) {
-			auto Revisions = LatestFirmwareCache()->GetDevices();
-			Poco::JSON::Array ObjectArray;
-			for (const auto &i : Revisions) {
-				ObjectArray.add(i);
+			auto Devices = LatestFirmwareCache()->GetDevices();
+			auto DeviceClasses = LatestFirmwareCache()->GetDeviceClasses();
+			auto DeviceTypesByClass = LatestFirmwareCache()->GetDeviceTypesByClass();
+
+			Poco::JSON::Array DeviceArray;
+			for (const auto &i : Devices)
+				DeviceArray.add(i);
+
+			Poco::JSON::Array ClassArray;
+			for (const auto &i : DeviceClasses)
+				ClassArray.add(i);
+
+			Poco::JSON::Object ClassMapObj;
+			for (const auto &entry : DeviceTypesByClass) {
+				Poco::JSON::Array ClassDevices;
+				for (const auto &dev : entry.second)
+					ClassDevices.add(dev);
+				ClassMapObj.set(entry.first, ClassDevices);
 			}
+
 			Poco::JSON::Object RetObj;
-			RetObj.set(RESTAPI::Protocol::DEVICETYPES, ObjectArray);
+			RetObj.set(RESTAPI::Protocol::DEVICETYPES, DeviceArray);
+			RetObj.set(RESTAPI::Protocol::DEVICECLASSES, ClassArray);
+			RetObj.set(RESTAPI::Protocol::DEVICETYPESBYCLASS, ClassMapObj);
 			return ReturnObject(RetObj);
 		}
 

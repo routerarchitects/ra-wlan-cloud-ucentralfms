@@ -28,7 +28,8 @@
 			"digest             varchar, "
 			"latest             boolean,  "
 			"notes              text, "
-			"created            bigint"
+			"created            bigint, "
+			"deviceClass        varchar"
  */
 
 namespace OpenWifi {
@@ -50,7 +51,8 @@ namespace OpenWifi {
 											ORM::Field{"digest", ORM::FieldType::FT_TEXT},
 											ORM::Field{"latest", ORM::FieldType::FT_BOOLEAN},
 											ORM::Field{"notes", ORM::FieldType::FT_TEXT},
-											ORM::Field{"created", ORM::FieldType::FT_BIGINT}};
+											ORM::Field{"created", ORM::FieldType::FT_BIGINT},
+											ORM::Field{"deviceClass", ORM::FieldType::FT_TEXT}};
 
 	FirmwaresDB::FirmwaresDB(OpenWifi::DBType T, Poco::Data::SessionPool &P, Poco::Logger &L)
 		: DB(T, "firmwares", FirmwaresDB_Fields, {}, P, L, "fws") {}
@@ -58,7 +60,7 @@ namespace OpenWifi {
 	bool FirmwaresDB::AddFirmware(FMSObjects::Firmware &F) {
 		// find the older software and change to latest = 0
 		F.id = MicroServiceCreateUUID();
-		if (LatestFirmwareCache()->AddToCache(F.deviceType, F.revision, F.id, F.imageDate)) {
+		if (LatestFirmwareCache()->AddToCache(F.deviceType, F.revision, F.id, F.imageDate, F.deviceClass)) {
 			F.latest = true;
 			std::vector<FMSObjects::Firmware> Fs;
 			std::string WhereClause{" deviceType='" + F.deviceType + "' AND Latest=true "};
@@ -129,7 +131,7 @@ namespace OpenWifi {
 
 	void FirmwaresDB::PopulateLatestFirmwareCache() {
 		Iterate([](const OpenWifi::FMSObjects::Firmware &F) {
-			LatestFirmwareCache()->AddToCache(F.deviceType, F.revision, F.id, F.imageDate);
+			LatestFirmwareCache()->AddToCache(F.deviceType, F.revision, F.id, F.imageDate, F.deviceClass);
 			return true;
 		});
 	}
@@ -227,6 +229,7 @@ void ORM::DB<OpenWifi::FirmwaresRecordTuple, OpenWifi::FMSObjects::Firmware>::Co
 	F.notes =
 		OpenWifi::RESTAPI_utils::to_object_array<OpenWifi::SecurityObjects::NoteInfo>(T.get<16>());
 	F.created = T.get<17>();
+	F.deviceClass = T.get<18>();
 }
 
 template <>
@@ -250,4 +253,5 @@ void ORM::DB<OpenWifi::FirmwaresRecordTuple, OpenWifi::FMSObjects::Firmware>::Co
 	T.set<15>(F.latest);
 	T.set<16>(OpenWifi::RESTAPI_utils::to_string(F.notes));
 	T.set<17>(F.created);
+	T.set<18>(F.deviceClass);
 }

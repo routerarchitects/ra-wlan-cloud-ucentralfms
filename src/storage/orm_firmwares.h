@@ -12,7 +12,7 @@ namespace OpenWifi {
 	typedef Poco::Tuple<std::string, std::string, std::string, std::string, std::string,
 						std::string, std::string, uint64_t, uint64_t, uint64_t, std::string,
 						std::string, std::string, std::string, std::string, bool, std::string,
-						uint64_t>
+						uint64_t, std::string>
 		FirmwaresRecordTuple;
 	typedef std::vector<FirmwaresRecordTuple> FirmwaresRecordTupleList;
 
