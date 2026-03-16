@@ -219,8 +219,26 @@ namespace OpenWifi {
 		static const std::string JSON(".json");
 		static const std::string UPGRADE("-upgrade.bin");
 
-		std::string URIBase = "https://";
-		URIBase += MicroServiceConfigGetString("s3.bucket.uri", "");
+		/*FMS Manifest Creator
+		Previously generated firmware URIs pointing to direct S3 objects.
+		 Now URIs are rewritten to point to the configured proxy server.
+		 This allows devices to download via secure proxy with certificates.
+		*/
+		std::string URIBase = MicroServiceConfigGetString("firmware.uri.base", "");
+		if (!URIBase.empty() && URIBase.rfind("http", 0) != 0) {
+			URIBase = "https://" + URIBase;
+		}
+		if (URIBase.empty()) {
+			const auto bucketUri = MicroServiceConfigGetString("s3.bucket.uri", "");
+			const bool https = MicroServiceConfigGetBool("s3.endpoint.https", true);
+			if (!bucketUri.empty()) {
+				URIBase = (https ? "https://" : "http://") + bucketUri;
+			}
+		}
+		// Normalize (strip trailing slashes)
+		while (!URIBase.empty() && URIBase.back() == '/') {
+			URIBase.pop_back();
+		}
 
 		Bucket.clear();
 
