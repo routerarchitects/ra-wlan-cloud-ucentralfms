@@ -2,10 +2,10 @@ openapi: 3.0.1
 info:
   title: uCentral Firmware Service API
   description: A process to manage new uCentral firmware distribution.
-  version: 2.5.0
+  version: 1.0.0
   license:
     name: BSD3
-    url: https://github.com/Telecominfraproject/wlan-cloud-ucentralgw/blob/master/LICENSE
+    url: https://github.com/routerarchitects/ra-wlan-cloud-ucentralgw/blob/master/LICENSE
   contact:
     name: Arilia Support
     url: https://www.ucentral.info/support
@@ -30,13 +30,13 @@ components:
 
   responses:
     NotFound:
-      $ref: 'https://github.com/Telecominfraproject/wlan-cloud-ucentralsec/blob/main/openpapi/owsec.yaml#/components/responses/NotFound'
+      $ref: 'https://github.com/routerarchitects/ra-wlan-cloud-ucentralsec/blob/main/openpapi/owsec.yaml#/components/responses/NotFound'
     Unauthorized:
-      $ref: 'https://github.com/Telecominfraproject/wlan-cloud-ucentralsec/blob/main/openpapi/owsec.yaml#/components/responses/Unauthorized'
+      $ref: 'https://github.com/routerarchitects/ra-wlan-cloud-ucentralsec/blob/main/openpapi/owsec.yaml#/components/responses/Unauthorized'
     Success:
-      $ref: 'https://github.com/Telecominfraproject/wlan-cloud-ucentralsec/blob/main/openpapi/owsec.yaml#/components/responses/Success'
+      $ref: 'https://github.com/routerarchitects/ra-wlan-cloud-ucentralsec/blob/main/openpapi/owsec.yaml#/components/responses/Success'
     BadRequest:
-      $ref: 'https://github.com/Telecominfraproject/wlan-cloud-ucentralsec/blob/main/openpapi/owsec.yaml#/components/responses/BadRequest'
+      $ref: 'https://github.com/routerarchitects/ra-wlan-cloud-ucentralsec/blob/main/openpapi/owsec.yaml#/components/responses/BadRequest'
 
   schemas:
     FirmwareDetails:
@@ -468,7 +468,7 @@ paths:
       operationId: getFirmwareList
       parameters:
         - in: query
-          description: Pagination start (starts at 1. If not specified, 1 is assumed)
+          description: How many items to skip from the start (default is 0).
           name: offset
           schema:
             type: integer
@@ -480,14 +480,15 @@ paths:
             type: integer
           required: false
         - in: query
-          description: Filter the results
-          name: filter
-          schema:
-            type: string
-          required: false
-        - in: query
           name: latestOnly
           description: Return only the latest firmware
+          schema:
+            type: boolean
+            default: false
+          required: false
+        - in: query
+          name: idOnly
+          description: Return only firmware UUID values
           schema:
             type: boolean
             default: false
@@ -550,7 +551,7 @@ paths:
           name: update
           schema:
             type: boolean
-          required: false
+          required: true
       responses:
         200:
           $ref: '#/components/responses/Success'
@@ -685,7 +686,7 @@ paths:
             type: string
           required: true
         - in: query
-          description: Pagination start (starts at 1. If not specified, 1 is assumed)
+          description: How many items to skip from the start (default is 0).
           name: offset
           schema:
             type: integer
@@ -695,12 +696,6 @@ paths:
           name: limit
           schema:
             type: integer
-          required: false
-        - in: query
-          description: Filter the results
-          name: filter
-          schema:
-            type: string
           required: false
         - in: query
           description: Return current device list and current firmware
@@ -744,7 +739,7 @@ paths:
             type: string
           required: true
         - in: query
-          description: Pagination start (starts at 1. If not specified, 1 is assumed)
+          description: How many items to skip from the start (default is 0).
           name: id
           schema:
             type: string
@@ -770,19 +765,19 @@ paths:
       operationId: getFirmwareAge
       parameters:
         - in: query
-          description: The exact current version of the firmware on that device.
+          description: The exact current version of the firmware on that device. Required when select is not provided.
           name: revision
           schema:
             type: string
-          required: true
+          required: false
         - in: query
-          description: The exact current version of the firmware on that device.
+          description: Device type for firmware lookup. Required when select is not provided.
           name: deviceType
           schema:
             type: string
-          required: true
+          required: false
         - in: query
-          description: Specify list of serial  numbers to retrieve age for
+          description: Supply a comma-separated list of operator IDs
           name: select
           schema:
             type: string
@@ -810,7 +805,7 @@ paths:
       operationId: getConnectedDevices
       parameters:
         - in: query
-          description: Pagination start (starts at 1. If not specified, 1 is assumed)
+          description: How many items to skip from the start (default is 0).
           name: offset
           schema:
             type: integer
@@ -820,12 +815,6 @@ paths:
           name: limit
           schema:
             type: integer
-          required: false
-        - in: query
-          description: Filter the results
-          name: filter
-          schema:
-            type: string
           required: false
       responses:
         200:
@@ -978,7 +967,7 @@ paths:
             example:
               - element1
               - element1,element2,element3
-          required: false
+          required: true
       responses:
         200:
           description: List of configuration elements
