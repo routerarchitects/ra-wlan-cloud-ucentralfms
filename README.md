@@ -10,8 +10,8 @@ to facilitate the task of upgrade and maintaining the proper firmware for all th
 used in your OpenWiFi solution. You may either [build it](#building) or use the [Docker version](#docker).
 
 ## OpenAPI
-You may get static page with OpenAPI docs generated from the definition on [GitHub Page](https://github.com/routerarchitects/ra-wlan-cloud-ucentralfms).
-Also, you may use [Swagger UI](https://petstore.swagger.io/#/) with OpenAPI definition file link (i.e. [latest version file](https://github.com/routerarchitects/ra-wlan-cloud-ucentralfms/blob/main/openapi/owfms.yaml)) to get interactive docs page.
+OpenAPI definition is available in the [GitHub repository](https://github.com/routerarchitects/ra-wlan-cloud-ucentralfms).
+Also, you may use [Swagger UI](https://petstore.swagger.io/#/) with OpenAPI definition file raw link (i.e. [latest version file](https://raw.githubusercontent.com/routerarchitects/ra-wlan-cloud-ucentralfms/main/openapi/owfms.yaml)) to get interactive docs page.
 
 ## Building
 To build the microservice from source, please follow the instructions in [here](./BUILDING.md)

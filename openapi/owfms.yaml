@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: uCentral Firmware Service API
   description: A process to manage new uCentral firmware distribution.
-  version: 2.5.0
+  version: 1.0.0
   license:
     name: BSD3
     url: https://github.com/routerarchitects/ra-wlan-cloud-ucentralgw/blob/master/LICENSE
